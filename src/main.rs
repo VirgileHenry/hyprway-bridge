@@ -12,7 +12,7 @@ fn get_env_var(key: &str) -> std::io::Result<String> {
 fn main() -> std::io::Result<()> {
     /* Compute paths */
     let home = get_env_var("HOME")?;
-    let data_path = format!("{home}/.config/hypr-waybar-bridge");
+    let data_path = format!("{home}/.config/hyprway-bridge");
     let persistent_state_path = format!("{data_path}/persistent.json");
     let rendered_state_path = format!("{data_path}/rendered.json");
 

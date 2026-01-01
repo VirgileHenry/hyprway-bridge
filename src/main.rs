@@ -17,10 +17,7 @@ fn main() -> std::io::Result<()> {
     let rendered_state_path = format!("{data_path}/rendered.json");
 
     /* Init */
-    std::fs::create_dir_all(&data_path)?;
-    let persistent_state = state::PersistentState::load_from_clients()?;
-    persistent_state.save(&persistent_state_path)?;
-    persistent_state.save_render(&rendered_state_path)?;
+    let _ = init(&data_path, &persistent_state_path, &rendered_state_path);
 
     /* Main loop: listen to the socket and update accordingly */
     use std::io::{BufRead, BufReader};
@@ -42,6 +39,14 @@ fn main() -> std::io::Result<()> {
         }
     }
 
+    Ok(())
+}
+
+fn init(data_path: &str, persistent_state_path: &str, rendered_state_path: &str) -> std::io::Result<()> {
+    std::fs::create_dir_all(data_path)?;
+    let persistent_state = state::PersistentState::load_from_clients()?;
+    persistent_state.save(&persistent_state_path)?;
+    persistent_state.save_render(&rendered_state_path)?;
     Ok(())
 }
 

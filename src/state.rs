@@ -69,14 +69,13 @@ impl PersistentState {
         std::fs::write(path, json)?;
 
         /* Signal waybar an update was made */
-        let output = std::process::Command::new("pidof").arg("waybar").output()?;
-        let waybar_pids = String::from_utf8(output.stdout).map_err(|e| Error::other(format!("invalid utf8 from pidof: {e}")))?;
+        let waybar_pids = crate::utils::waybar_pids()?;
 
-        for waybar_pid in waybar_pids.split(' ') {
+        for waybar_pid in waybar_pids {
             let status = std::process::Command::new("kill")
                 .arg("-s")
                 .arg("RTMIN+8")
-                .arg(waybar_pid.trim())
+                .arg(waybar_pid.to_string())
                 .status()?;
 
             if !status.success() {

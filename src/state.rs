@@ -44,16 +44,7 @@ impl PersistentState {
         })
     }
 
-    pub fn save(&self, path: &str) -> std::io::Result<()> {
-        use std::io::Error;
-
-        let json = serde_json::to_string(self).map_err(|e| Error::other(format!("Failed to serialize to json: {e}")))?;
-        std::fs::write(path, json)?;
-
-        Ok(())
-    }
-
-    pub fn save_render(&self, path: &str) -> std::io::Result<()> {
+    pub fn render(&self) -> std::io::Result<()> {
         use std::io::Error;
         let mut text = format!("[");
 
@@ -66,22 +57,8 @@ impl PersistentState {
 
         let rendered = RenderedState { text };
         let json = serde_json::to_string(&rendered).map_err(|e| Error::other(format!("Failed to serialize to json: {e}")))?;
-        std::fs::write(path, json)?;
+        println!("{json}");
 
-        /* Signal waybar an update was made */
-        let waybar_pids = crate::utils::waybar_pids()?;
-
-        for waybar_pid in waybar_pids {
-            let status = std::process::Command::new("kill")
-                .arg("-s")
-                .arg("RTMIN+8")
-                .arg(waybar_pid.to_string())
-                .status()?;
-
-            if !status.success() {
-                return Err(Error::other(format!("Failed to send signal to waybar")));
-            }
-        }
         Ok(())
     }
 }
